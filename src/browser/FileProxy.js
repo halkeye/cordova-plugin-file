@@ -24,41 +24,39 @@
 /*global IDBKeyRange*/
 
 /* Heavily based on https://github.com/ebidel/idb.filesystem.js */
-
-// window.webkitRequestFileSystem and window.webkitResolveLocalFileSystemURL
-// are available only in Chrome and possible a good flag to indicate
-// that we're running in Chrome
-var isChrome = window.webkitRequestFileSystem && window.webkitResolveLocalFileSystemURL;
-
-// For chrome we don't need to implement proxy methods
-// All functionality can be accessed natively.
-if (isChrome) {
-    var pathsPrefix = {
-        // Read-only directory where the application is installed.
-        applicationDirectory: location.origin + "/",
-        // Where to put app-specific data files.
-        dataDirectory: 'filesystem:file:///persistent/',
-        // Cached files that should survive app restarts.
-        // Apps should not rely on the OS to delete files in here.
-        cacheDirectory: 'filesystem:file:///temporary/',
-    };
-
-    exports.requestAllPaths = function(successCallback) {
-        successCallback(pathsPrefix);
-    };
-
-    require("cordova/exec/proxy").add("File", module.exports);
-    return;
-}
-
-var LocalFileSystem = require('./LocalFileSystem'),
-    FileSystem = require('./FileSystem'),
-    FileEntry = require('./FileEntry'),
-    FileError = require('./FileError'),
-    DirectoryEntry = require('./DirectoryEntry'),
-    File = require('./File');
-
 (function(exports, global) {
+    // window.webkitRequestFileSystem and window.webkitResolveLocalFileSystemURL
+    // are available only in Chrome and possible a good flag to indicate
+    // that we're running in Chrome
+    var isChrome = window.webkitRequestFileSystem && window.webkitResolveLocalFileSystemURL;
+
+    // For chrome we don't need to implement proxy methods
+    // All functionality can be accessed natively.
+    if (isChrome) {
+        var pathsPrefix = {
+            // Read-only directory where the application is installed.
+            applicationDirectory: location.origin + "/",
+            // Where to put app-specific data files.
+            dataDirectory: 'filesystem:file:///persistent/',
+            // Cached files that should survive app restarts.
+            // Apps should not rely on the OS to delete files in here.
+            cacheDirectory: 'filesystem:file:///temporary/',
+        };
+
+        exports.requestAllPaths = function(successCallback) {
+            successCallback(pathsPrefix);
+        };
+
+        require("cordova/exec/proxy").add("File", module.exports);
+        return;
+    }
+
+    var LocalFileSystem = require('./LocalFileSystem'),
+        FileSystem = require('./FileSystem'),
+        FileEntry = require('./FileEntry'),
+        FileError = require('./FileError'),
+        DirectoryEntry = require('./DirectoryEntry'),
+        File = require('./File');
     var indexedDB = global.indexedDB || global.mozIndexedDB;
     if (!indexedDB) {
         throw "Firefox OS File plugin: indexedDB not supported";
